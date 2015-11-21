@@ -1,0 +1,9 @@
+web:
+  build: .
+#  image: node:5.0-onbuild
+#  command: forever /usr/src/app/server.js -D FOREGROUND
+  command: bash
+  volumes:
+    - ./:/usr/src/app/
+  ports:
+    - "3000:3000"
