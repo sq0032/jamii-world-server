@@ -1,14 +1,22 @@
 var express = require('express');
+var socket_io = require('socket.io');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var redis = require("redis");
+var client = redis.createClient('6379', 'redis');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+// Express
 var app = express();
+
+// Socket.io
+var io = socket_io();
+app.io = io;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,6 +32,43 @@ app.use('/static', express.static(path.join(__dirname, 'frontend')));
 
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/frontend/index.html'));
+});
+
+app.post('/login', function(req, res){
+  var user = {
+    username: req.body.username,
+    x: 150,
+    y: 150
+  };
+  
+  client.hset("user10", user.username, JSON.stringify(user));
+  client.hget("user10", function(err, obj){
+    console.log(obj);
+    res.json(obj);
+  });
+//  console.log(typeof(user.username));
+//  client.hexists("users", user.username, function(err, reply){
+//    console.log(reply);
+//  }); 
+//  res.json(req.body);
+//  res.send('good');
+});
+var num = 0;
+
+app.get('/redis', function(req, res){
+  var user = {
+    name: "user"+num,
+    x: 100+num,
+    y: 150+num*2
+  };
+  console.log(user.name);
+  console.log(JSON.stringify(user));
+  client.hset("user11", user.name, user, redis.print);
+  client.hgetall("user11", function(err, obj){
+    console.log(typeof(obj));
+    res.send(obj);
+  });
+  num = num+1;
 });
 
 //app.use('/', routes);
@@ -60,5 +105,25 @@ app.use(function(err, req, res, next) {
   });
 });
 
+io.on("connect", function(socket){
+  console.log("A user connected");
+  socket.emit('news', { hello: 'world' });
+  
+  socket.on("login", function(username){
+    
+    var user = {
+      name: username,
+      x: 100+num,
+      y: 150+num*2
+    };
+    console.log(user.name);
+    console.log(JSON.stringify(user));
+    client.hset("user11", user.name, user, redis.print);
+    client.hgetall("user11", function(err, obj){
+      console.log(typeof(obj));
+      res.send(obj);
+    });
+  });
+});
 
 module.exports = app;

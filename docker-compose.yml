@@ -1,9 +1,14 @@
+redis:
+  image: redis:3.0
 web:
   build: .
 #  image: node:5.0-onbuild
-#  command: forever /usr/src/app/server.js -D FOREGROUND
-  command: bash
+  command: forever /usr/src/app/bin/www
+#  command: bash
   volumes:
     - ./:/usr/src/app/
   ports:
     - "3000:3000"
+  links:
+    - redis
+  
