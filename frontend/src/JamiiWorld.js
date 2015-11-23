@@ -13,8 +13,8 @@ export default class JamiiWorld extends Component {
     super(props);
     
     this.state = {
-//      user: {username:"aaa", x:120, y:120},
-      user: null,
+      user: {username:"aaa", x:120, y:120},
+//      user: null,
       error_message: '',
       members: [],
       is_in_meetingroom: false,
@@ -110,14 +110,14 @@ export default class JamiiWorld extends Component {
   }
   
   handleChatKeyPress (event){
-    console.log(event.key);
-    if (event.key=='Enter'){
+    if (event.keyCode=='13'){
       actions.sendMessage(this.state.message, this.state.user);
       this.setState({message: ''});
-    } else {
-      const message = this.state.message + event.key;
-      this.setState({message: message});
     }
+  }
+  
+  handleChatChange (event){
+    this.setState({message: event.target.value});
   }
   
   renderMembers(){
@@ -163,7 +163,14 @@ export default class JamiiWorld extends Component {
             </svg>
           </div>
           <div style={style.Chatbar}>
-            <input onKeyPress={this.handleChatKeyPress.bind(this)} value={this.state.message} placeholder="Say something here" type="text" style={{width:"100%", height:"30px"}}></input>
+            <input 
+                onKeyDown={this.handleChatKeyPress.bind(this)} 
+                onChange={this.handleChatChange.bind(this)} 
+                value={this.state.message} 
+                placeholder="Say something here" 
+                type="text" 
+                style={{width:"100%", height:"30px"}}>
+            </input>
           </div>
           {meetingRoomView}
         </div>
