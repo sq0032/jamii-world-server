@@ -13,8 +13,8 @@ export default class JamiiWorld extends Component {
     super(props);
     
     this.state = {
-      user: {username:"aaa", x:120, y:120},
-//      user: null,
+//      user: {username:"aaa", x:120, y:120},
+      user: null,
       error_message: '',
       members: [],
       is_in_meetingroom: false,
