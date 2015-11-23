@@ -4,7 +4,6 @@ import {Motion, spring} from 'react-motion';
 import MeetingRoom from './MeetingRoom';
 import MeetingRoomView from './MeetingRoomView';
 import Member from './Member';
-import Chatbar from './Chatbar';
 import actions from './actions';
 
 
@@ -105,7 +104,6 @@ export default class JamiiWorld extends Component {
   }
   
   login(event){
-//    console.log(this.refs.username.value);
     if(this.refs.username.value!=''){
       actions.login(this.refs.username.value);
     }
@@ -134,7 +132,16 @@ export default class JamiiWorld extends Component {
   }
   
   render() {
-    console.log(this.state.user);
+    if (!this.state.user){
+      return (
+        <div>
+          <input type="text" name="username" placeholder="username" ref="username" />
+          <button onClick={this.login.bind(this)}>Submit</button>
+          <p style={{color:"red"}}>{this.state.error_message}</p>
+        </div>
+      );
+    } else {
+      
       const meetingRoomView = this.state.is_in_meetingroom ? (<MeetingRoomView />) : null;
       console.log(meetingRoomView);
       const Members = this.renderMembers();
@@ -162,6 +169,7 @@ export default class JamiiWorld extends Component {
         </div>
       );
     }
+  }
 }
 
 const style = {

@@ -56,15 +56,17 @@ actions.loginFail = function(response){
 }
 
 actions.poke = function(username){
-  window.app.socket.emit('poke', username);
-  actions.poked(username);
+  const data = {
+    username: username
+  }
+  window.app.socket.emit('poke', data);
 }
 
-actions.poked = function(username){
+actions.poked = function(data){
   console.log('action poked');
   $(window).trigger({
     type: 'POKED',
-    username: username
+    username: data.username
   });
 }
 
@@ -74,7 +76,7 @@ actions.sendMessage = function(message, user){
     username: user.username
   }
   window.app.socket.emit('send_message', data);
-  actions.receiveMessage(data);
+//  actions.receiveMessage(data);
 }
 
 actions.receiveMessage = function(data){
@@ -92,9 +94,6 @@ actions.updateMemberPosition = function(response){
     for (let index in response){
       members.push(JSON.parse(response[index]));
     }
-  
-    window.test = members;
-    
   
     $(window).trigger({
       type: 'UPDATE_MEMBER_POSITION',
@@ -120,6 +119,10 @@ window.app.socket.on("LOGIN_FAIL", (response)=>{
 
 window.app.socket.on("RECEIVE_MESSAGE", (response)=>{
   actions.receiveMessage(response);
+});
+
+window.app.socket.on("POKED", (response)=>{
+  actions.poked(response);
 });
 
 module.exports = actions;

@@ -28,7 +28,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use('/static', express.static(path.join(__dirname, 'frontend')));
+app.use(express.static(path.join(__dirname, 'frontend')));
 
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/frontend/index.html'));
@@ -142,12 +142,28 @@ io.on("connect", function(socket){
       io.emit('UPDATE_MEMBER_POSITION', obj);
     });
   });
+
+  /*
+    data:{
+      message: message,
+      username: user.username
+    }
+  */
+  socket.on("poke", function(data){
+    io.emit("POKED", data)
+  })
+  
+  socket.on("send_message", function(data){
+    io.emit("RECEIVE_MESSAGE", data)
+  })
   
   socket.on('disconnect', function (data) {
-    client.hdel("user10", socket.username);
-    client.hgetall("user10", function(err, obj){
-      io.emit('UPDATE_MEMBER_POSITION', obj);
-    });
+    if (socket.username){
+      client.hdel("user10", socket.username);
+      client.hgetall("user10", function(err, obj){
+        io.emit('UPDATE_MEMBER_POSITION', obj);
+      });
+    }
   });
 });
 
