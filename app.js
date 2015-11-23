@@ -41,8 +41,8 @@ app.post('/login', function(req, res){
     y: 150
   };
   
-  client.hset("user10", user.username, JSON.stringify(user));
-  client.hget("user10", function(err, obj){
+  client.hset("user11", user.username, JSON.stringify(user));
+  client.hget("user11", user.username, function(err, obj){
     console.log(obj);
     res.json(obj);
   });
@@ -110,18 +110,43 @@ io.on("connect", function(socket){
   socket.emit('news', { hello: 'world' });
   
   socket.on("login", function(username){
-    
-    var user = {
-      name: username,
-      x: 100+num,
-      y: 150+num*2
-    };
-    console.log(user.name);
-    console.log(JSON.stringify(user));
-    client.hset("user11", user.name, user, redis.print);
-    client.hgetall("user11", function(err, obj){
-      console.log(typeof(obj));
-      res.send(obj);
+      //Checkt if user has logged in
+      client.hexists("user10", username, function(err, reply){
+        if (reply==0){
+          client.set(username, socket.id);
+          var user = {
+            username: username,
+            x: 150,
+            y: 150
+          };
+          client.hset("user10", username, JSON.stringify(user));
+          client.hget("user10", username, function(err, obj){
+            socket.emit("LOGIN_SUCCESS", obj);
+          });
+          client.hgetall("user10", function(err, obj){
+            console.log(obj);
+            io.emit('UPDATE_MEMBER_POSITION', obj);
+          });          
+          socket.username = username;
+        } else {
+          socket.emit("LOGIN_FAIL", "user exists");
+        }
+        console.log(reply);
+      });
+  });
+  
+  socket.on("move", function(user){
+    client.hset("user10", user.username, JSON.stringify(user));
+    client.hgetall("user10", function(err, obj){
+      console.log(obj);
+      io.emit('UPDATE_MEMBER_POSITION', obj);
+    });
+  });
+  
+  socket.on('disconnect', function (data) {
+    client.hdel("user10", socket.username);
+    client.hgetall("user10", function(err, obj){
+      io.emit('UPDATE_MEMBER_POSITION', obj);
     });
   });
 });
