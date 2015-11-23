@@ -4,6 +4,7 @@ import {Motion, spring} from 'react-motion';
 import MeetingRoom from './MeetingRoom';
 import MeetingRoomView from './MeetingRoomView';
 import Member from './Member';
+import Chatbar from './Chatbar';
 import actions from './actions';
 
 
@@ -13,10 +14,12 @@ export default class JamiiWorld extends Component {
     super(props);
     
     this.state = {
+//      user: {username:"aaa", x:120, y:120},
       user: null,
       error_message: '',
       members: [],
-      is_in_meetingroom: false
+      is_in_meetingroom: false,
+      message: ''
     };
   }
   
@@ -108,6 +111,17 @@ export default class JamiiWorld extends Component {
     }
   }
   
+  handleChatKeyPress (event){
+    console.log(event.key);
+    if (event.key=='Enter'){
+      actions.sendMessage(this.state.message, this.state.user);
+      this.setState({message: ''});
+    } else {
+      const message = this.state.message + event.key;
+      this.setState({message: message});
+    }
+  }
+  
   renderMembers(){
     const Members = this.state.members.map(function(member){
       return (
@@ -120,38 +134,34 @@ export default class JamiiWorld extends Component {
   }
   
   render() {
-    if (!this.state.user){
-      return (
-        <div>
-          <input type="text" name="username" placeholder="username" ref="username" />
-          <button onClick={this.login.bind(this)}>Submit</button>
-          <p style={{color:"red"}}>{this.state.error_message}</p>
-        </div>
-      );
-    } else {
+    console.log(this.state.user);
       const meetingRoomView = this.state.is_in_meetingroom ? (<MeetingRoomView />) : null;
       console.log(meetingRoomView);
       const Members = this.renderMembers();
 
       return (
         <div style={style.JamiiWorld}>
-          <svg 
-            width="100%" 
-            height="100%" 
-            style={style.JamiiWorldSvg}
-            onClick={this.moveTo.bind(this)} >
-            <MeetingRoom name="Meeting Room #1" link="https://appear.in/jamii_meeting_room_1" pos={{x:5, y:5}}/>
-            <MeetingRoom name="Meeting Room #2" link="https://appear.in/jamii_meeting_room_2" pos={{x:5, y:165}}/>
-            <Motion style={{x: spring(this.state.user.x), y:spring(this.state.user.y)}}>
-              {pos => <Member role='user' pos={pos} username={this.state.user.username}/>}
-            </Motion>
-            {Members}
-          </svg>
-            {meetingRoomView}
+          <div style={style.JamiiWorldSvg}>
+            <svg 
+              width="100%"
+              height="100%"
+
+              onClick={this.moveTo.bind(this)} >
+              <MeetingRoom name="Meeting Room #1" link="https://appear.in/jamii_meeting_room_1" pos={{x:5, y:5}}/>
+              <MeetingRoom name="Meeting Room #2" link="https://appear.in/jamii_meeting_room_2" pos={{x:5, y:165}}/>
+              <Motion style={{x: spring(this.state.user.x), y:spring(this.state.user.y)}}>
+                {pos => <Member role='user' pos={pos} username={this.state.user.username}/>}
+              </Motion>
+              {Members}
+            </svg>
+          </div>
+          <div style={style.Chatbar}>
+            <input onKeyPress={this.handleChatKeyPress.bind(this)} value={this.state.message} placeholder="Say something here" type="text" style={{width:"100%", height:"30px"}}></input>
+          </div>
+          {meetingRoomView}
         </div>
       );
     }
-  }
 }
 
 const style = {
@@ -160,20 +170,34 @@ const style = {
 //    width: "100%",
 //    height: "100%",
     position: "absolute",
-    top: "10",
-    bottom: "10",
-    left: "10",
-    right: "10",
-    border: "5px solid black",
+    top: "0px",
+    bottom: "0px",
+    left: "0px",
+    right: "0px",
+    border: "0px",
+    padding: "5px"
+//    marginBottom: "50px"
   },
   JamiiWorldSvg: {
-//    position: "absolute",
+//    position: "relative",
+    border: "5px solid black",
+//    marginBottom: "50px"
+    position: "absolute",
 //    height: "100%",
-//    top: "50",
-//    bottom: "40",
-//    left: "0",
-//    right: "0",
+    top: "5px",
+    left: "5px",
+    right: "5px",
+    bottom: "40px",
 //    width: "500px",
 //    border: "5px solid black"
+  },
+  Chatbar: {
+    position: "absolute",
+    bottom: "5px",
+    left: "5px",
+    right: "5px",
+//    height: "50px"
+    
+    
   }
 };

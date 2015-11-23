@@ -36,38 +36,6 @@ actions.connectServer = function(){
 
 };
 
-//actions.login = function(username){
-//    const data = {
-//        username: username
-//    }
-//          
-//    const url = "/login";
-//    $.ajax({
-//        method: 'POST',
-//        url: url,
-//        data: JSON.stringify(data),
-//        contentType: 'application/json'
-//    })
-//    .done(function( response ){
-////      console.log(`login success ${response}`);
-////      console.log(response);
-////      var user = null;
-////      var user = JSON.parse(response[username]);
-//      
-//      window.test = response;
-//      $(window).trigger({
-//        type: 'LOGIN_SUCCESS',
-//        user: JSON.parse(response),
-////        user: JSON.parse(response[username]),
-//      });
-//    })
-//    .fail(function( response ){
-//      $(window).trigger({
-//        type: 'LOGIN_FAIL'
-//      });
-//    });
-//};
-
 actions.login = function(username){
   window.app.socket.emit('login', username);
 //    window.app.socket.emit('move', user);  
@@ -85,6 +53,36 @@ actions.loginFail = function(response){
       type: 'LOGIN_FAIL',
       message: response,
     });
+}
+
+actions.poke = function(username){
+  window.app.socket.emit('poke', username);
+  actions.poked(username);
+}
+
+actions.poked = function(username){
+  console.log('action poked');
+  $(window).trigger({
+    type: 'POKED',
+    username: username
+  });
+}
+
+actions.sendMessage = function(message, user){
+  const data = {
+    message: message,
+    username: user.username
+  }
+  window.app.socket.emit('send_message', data);
+  actions.receiveMessage(data);
+}
+
+actions.receiveMessage = function(data){
+  $(window).trigger({
+    type: 'RECEIVE_MESSAGE',
+    message: data.message,
+    username: data.username,
+  });
 }
 
 //actions.move = function(){}
@@ -114,6 +112,14 @@ window.app.socket.on("LOGIN_SUCCESS", (response)=>{
 
 window.app.socket.on("LOGIN_FAIL", (response)=>{
   actions.loginFail(response);
+});
+
+window.app.socket.on("LOGIN_FAIL", (response)=>{
+  actions.loginFail(response);
+});
+
+window.app.socket.on("RECEIVE_MESSAGE", (response)=>{
+  actions.receiveMessage(response);
 });
 
 module.exports = actions;
