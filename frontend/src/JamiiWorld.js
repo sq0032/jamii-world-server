@@ -70,15 +70,15 @@ export default class JamiiWorld extends Component {
     const that = event.data.this;
     const user = {
       username: that.state.user.username,
-      x: 50,
-      y: 50
+      x: event.pos.x+50,
+      y: event.pos.y+50
     };    
     that.setState({
       user: user,
       is_in_meetingroom:true
     });
     
-//    actions.
+    actions.moveTo(user);
   }
   
   on_moveToLobby(event) {
@@ -140,7 +140,8 @@ export default class JamiiWorld extends Component {
             height="100%" 
             style={style.JamiiWorldSvg}
             onClick={this.moveTo.bind(this)} >
-            <MeetingRoom pos={{x:5, y:5}}/>
+            <MeetingRoom name="Meeting Room #1" link="https://appear.in/jamii_meeting_room_1" pos={{x:5, y:5}}/>
+            <MeetingRoom name="Meeting Room #2" link="https://appear.in/jamii_meeting_room_2" pos={{x:5, y:165}}/>
             <Motion style={{x: spring(this.state.user.x), y:spring(this.state.user.y)}}>
               {pos => <Member role='user' pos={pos} username={this.state.user.username}/>}
             </Motion>
