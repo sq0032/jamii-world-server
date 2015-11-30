@@ -136,6 +136,9 @@ io.on("connect", function(socket){
   });
   
   socket.on("move", function(user){
+    if (!socket.username){
+      socket.username = username;
+    }
     client.hset("user10", user.username, JSON.stringify(user));
     client.hgetall("user10", function(err, obj){
       console.log(obj);
