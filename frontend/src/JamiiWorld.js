@@ -18,6 +18,7 @@ export default class JamiiWorld extends Component {
       error_message: '',
       members: [],
       is_in_meetingroom: false,
+      mettingroom_link: '',
       message: ''
     };
   }
@@ -74,10 +75,12 @@ export default class JamiiWorld extends Component {
       username: that.state.user.username,
       x: event.pos.x+50,
       y: event.pos.y+50
-    };    
+    };
+    const meetingroom_link = event.meetingroom_link;
     that.setState({
       user: user,
-      is_in_meetingroom:true
+      is_in_meetingroom: true,
+      meetingroom_link: event.link
     });
     
     actions.moveTo(user);
@@ -142,7 +145,7 @@ export default class JamiiWorld extends Component {
       );
     } else {
       
-      const meetingRoomView = this.state.is_in_meetingroom ? (<MeetingRoomView />) : null;
+      const meetingRoomView = this.state.is_in_meetingroom ? (<MeetingRoomView link={this.state.meetingroom_link}/>) : null;
       console.log(meetingRoomView);
       const Members = this.renderMembers();
 

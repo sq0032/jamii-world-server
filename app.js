@@ -126,7 +126,7 @@ io.on("connect", function(socket){
           client.hgetall("user10", function(err, obj){
             console.log(obj);
             io.emit('UPDATE_MEMBER_POSITION', obj);
-          });          
+          }); 
           socket.username = username;
         } else {
           socket.emit("LOGIN_FAIL", "user exists");

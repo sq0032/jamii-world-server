@@ -13,11 +13,12 @@ window.app.socket.on("connect", function(){
 var actions = {};
 
 //Board actions
-actions.moveToMeetingRoom = function(pos){
+actions.moveToMeetingRoom = function(pos, link){
     console.log('MOVE_TO_MEETINGROOM');
     $(window).trigger({
       type: 'MOVE_TO_MEETINGROOM',
-      pos: pos
+      pos: pos,
+      link: link
     });
 };
 

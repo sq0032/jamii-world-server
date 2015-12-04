@@ -5,8 +5,8 @@ export default class MeetingRoom extends Component {
   moveToMeetingRoom(event) {
     event.preventDefault();
     event.stopPropagation();
-    actions.moveToMeetingRoom(this.props.pos);
-    window.open(this.props.link, '_blank');
+    actions.moveToMeetingRoom(this.props.pos, this.props.link);
+//    window.open(this.props.link, '_blank');
   }
   render() {
     return (

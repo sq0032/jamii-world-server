@@ -50,12 +50,14 @@ export default class MeetingRoomView extends React.Component{
         >
           Close
         </button>
+        <iframe src={this.props.link} width="100%" height="100%" frameborder="0"></iframe>
       </div>
     );
   }
 };
 
-MeetingRoomView.propTypes = { 
+MeetingRoomView.propTypes = {
+  
 };
 
 MeetingRoomView.defaultProps = { 
